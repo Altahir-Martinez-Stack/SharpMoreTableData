@@ -1,0 +1,335 @@
+﻿
+@{
+    ViewBag.Title = "Lista do empelado";
+}
+<h2>Lista de Empleado</h2>
+
+
+<div class="card">
+    <div class="card-header">
+        Empleados
+    </div>
+    <div class="card-body">
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalFormCreate">
+            Crear un empleado
+        </button>
+        <table id="myTable" class="display">
+            <thead>
+                <tr>
+                    <td>Nombre</td>
+                    <td>Apellido Paterno</td>
+                    <td>Apellido Materno</td>
+                    <td>Sexo</td>
+                    <td>Email</td>
+                    <td>Acciones</td>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+<!-- Modal -->
+<div class="modal fade" id="modalForm" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="staticBackdropLabel">Editar</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <input type="hidden" id="txtId" />
+                    <div class="mb-3">
+                        <label for="exampleInputEmail1" class="form-label">Nombre</label>
+                        <input type="text" class="form-control" id="txtName">
+                    </div>
+                    <div class="mb-3">
+                        <label for="exampleInputPassword1" class="form-label">Apellido Paterno</label>
+                        <input type="text" class="form-control" id="txtLastName">
+                    </div>
+                    <div class="mb-3">
+                        <label for="exampleInputPassword1" class="form-label">Apellido Materno</label>
+                        <input type="text" class="form-control" id="txtSurName">
+                    </div>
+                    <div class="mb-3">
+                        <label for="exampleInputPassword1" class="form-label">Sexo</label>
+                        <input type="text" class="form-control" id="txtGender">
+                    </div>
+                    <div class="mb-3">
+                        <label for="exampleInputPassword1" class="form-label">Email</label>
+                        <input type="text" class="form-control" id="txtEmail">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary" onclick="Update()">Actualizar</button>
+                @*<button type="button" class="btn btn-success" onclick="Save()">Guardar</button>*@
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="modalFormCreate" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="staticBackdropLabel">Crear Empleado</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <input type="hidden" id="txtId" />
+                    <div class="mb-3">
+                        <label for="exampleInputEmail1" class="form-label">Nombre</label>
+                        <input type="text" class="form-control" id="txtNameCreate">
+                    </div>
+                    <div class="mb-3">
+                        <label for="exampleInputPassword1" class="form-label">Apellido Paterno</label>
+                        <input type="text" class="form-control" id="txtLastNameCreate">
+                    </div>
+                    <div class="mb-3">
+                        <label for="exampleInputPassword1" class="form-label">Apellido Materno</label>
+                        <input type="text" class="form-control" id="txtSurNameCreate">
+                    </div>
+                    <div class="mb-3">
+                        <label for="exampleInputPassword1" class="form-label">Sexo</label>
+                        <input type="text" class="form-control" id="txtGenderCreate">
+                    </div>
+                    <div class="mb-3">
+                        <label for="exampleInputPassword1" class="form-label">Email</label>
+                        <input type="text" class="form-control" id="txtEmailCreate">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                @*<button type="button" class="btn btn-primary" onclick="Update()">Actualizar</button>*@
+                <button type="button" class="btn btn-success" onclick="Create()">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal -->
+<div class="modal fade" id="modalFormAlert" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="staticBackdropLabel">Modal title</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <label>Deseas eliminar el empleado : </label>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<link href="//cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" rel="stylesheet" />
+
+@section scripts{
+    <script src="//cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+
+    <script>
+        var tableEmployee;
+        $(document).ready(function () {
+            tableEmployee = $("#myTable").DataTable({
+                "processing": true,
+                "serverSide": true,
+                "ajax": {
+                    "url": "@Url.Content("~/Employee/Json")",
+                    "type": "POST",
+                    "datatype": "json"
+                },
+                "pageLength": 10,
+                "filter": true,
+                "responsivePriority": 1,
+                "data": null,
+                "columns": [
+                    { "data": "name", "name": "name", "autoWidth": true },
+                    { "data": "lastName", "name": "lastName", "autoWidth": true },
+                    { "data": "surName", "name": "surName", "autoWidth": true },
+                    { "data": "gender", "name": "gender", "autoWidth": true },
+                    { "data": "email", "name": "email", "autoWidth": true },
+                    {
+                        "data": "id", "render": function (data) {
+                            return "<button class='btn btn-primary btn-sm  ml-2' type='button' onclick='OpenModal(" + data + ")'>Editar</button>" +
+                                "<button class='btn btn-danger btn-sm ml-2' type='button' onclick='Delete(" + data + ")'>Eliminar</button>"
+                        },
+                        "orderable": false,
+                        "searchable": false,
+                        "width": "150px"
+                    },
+                ],
+                dom: 'Bfrtip',
+                buttons: [
+                    {
+                        text: 'Agregar Nuevo',
+                        attr: { class: 'btn btn-success btn-sm' },
+                        action: function (e, dt, node, config) {
+                            OpenModal(0)
+                        }
+                    }
+                ],
+                "language": {
+                    "url": "//cdn.datatables.net/plug-ins/1.10.15/i18n/Spanish.json"
+                }
+            });
+        });
+
+        function OpenModal($id, $test) {
+            console.log("testetste ::::: ", $test)
+            $("#txtId").val($id);
+            if ($id != 0) {
+
+                jQuery.ajax({
+                    url: "@Url.Content("~/Employee/GetEmployeeById")?id=" + $id ,
+                    type: "GET",
+                    dataType: "json",
+                    contentType: "application/json; charset=utf-8",
+                    success: function (data) {
+
+                        if (data != null) {
+                            $("#txtName").val(data.name);
+                            $("#txtLastName").val(data.lastName);
+                            $("#txtSurName").val(data.surName);
+                            $("#txtGender").val(data.gender);
+                            $("#txtEmail").val(data.email);
+                        }
+                        $('#modalForm').modal('show');
+                    }
+                });
+            } else {
+                FromCreate();
+
+                $('#modalFormCreate').modal('show');
+            };
+        }
+
+        function FromCreate() {
+            $("#txtId").val("");
+            $("#txtNameCreate").val("");
+            $("#txtLastNameCreate").val("");
+            $("#txtSurNameCreate").val("");
+            $("#txtGenderCreate").val("");
+            $("#txtEmailCreate").val("");
+        }
+
+        function Create() {
+            var $data = {
+                employee: {
+                    id: parseInt($("#txtId").val()),
+                    name: $("#txtNameCreate").val(),
+                    lastName: $("#txtLastNameCreate").val(),
+                    surName: $("#txtSurNameCreate").val(),
+                    gender: $("#txtGenderCreate").val(),
+                    email: $("#txtEmailCreate").val(),
+                }
+            }
+            console.log("data create :", $data)
+            jQuery.ajax({
+                url: "@Url.Content("~/Employee/Create")?EmployeeViewModel=" + $data,
+                type: "POST",
+                data: JSON.stringify($data),
+                dataType: "json",
+                contentType: "application/json; charset=utf-8",
+                success: function (data) {
+
+                    if (data.result) {
+                        DataTableUpadate();
+                        $('#modalFormCreate').modal('hide');
+                        FromCreate();
+                    } else {
+                        alert("No se pudo crear");
+                    }
+                },
+                error: function (error) {
+                    console.log(error)
+                },
+                beforeSend: function () {
+
+                }
+            });
+        }
+        function Update() {
+            var $data = {
+                employee: {
+                    id: parseInt($("#txtId").val()),
+                    name: $("#txtName").val(),
+                    lastName: $("#txtLastName").val(),
+                    surName: $("#txtSurName").val(),
+                    gender: $("#txtGender").val(),
+                    email: $("#txtEmail").val(),
+                }
+            }
+
+            jQuery.ajax({
+                url: "@Url.Content("~/Employee/Update")?EmployeeViewModel=" + $data,
+                type: "POST",
+                data: JSON.stringify($data),
+                dataType: "json",
+                contentType: "application/json; charset=utf-8",
+                success: function (data) {
+                    console.log("test update: ", data)
+                    console.log("test update detail: ", data.result)
+                    if (data.result) {
+                        DataTableUpadate();
+                        $('#modalForm').modal('hide');
+                    } else {
+                        alert("No se pudo actualizar los cambios");
+                    }
+                },
+                error: function (error) {
+                    console.log(error)
+                },
+                beforeSend: function () {
+
+                }
+            });
+        }
+        function Delete($id) {
+        if (confirm("¿Realmente desea eliminar?")) {
+
+                jQuery.ajax({
+                    url: "@Url.Content("~/Employee/Delete")?id=" + $id,
+                    type: "GET",
+                    dataType: "json",
+                    contentType: "application/json; charset=utf-8",
+                    success: function (data) {
+
+                        if (data.result) {
+                            DataTableUpadate();
+                        } else {
+                            alert("No se pudo eliminar el empleado");
+                        }
+                    }
+                });
+
+
+            }
+        }
+
+        function PageUpadate() {
+            window.location.reload()
+        }
+
+        function DataTableUpadate() {
+            return tableEmployee.ajax.reload();
+        }
+
+
+    </script>
+}
